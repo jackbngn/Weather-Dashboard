@@ -1,0 +1,40 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	min-height: 100vh;
+	/* overflow: hidden; */
+	margin: 0;
+}
+
+/* https://mycolor.space/gradient?ori=to+right+top&hex=%23237BFF&hex2=%23127AEB&sub=1  */
+header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 30px;
+	border: transparent solid 10px;
+	background-image: linear-gradient(
+		to right top,
+		#237bff,
+		#1d7bfa,
+		#187bf5,
+		#157af0,
+		#127aeb
+	);
+	width: 100%;
+	font-weight: 1000px;
+	color: white;
+}
+
+.btn {
+	width: 230px;
+	font-size: 25px;
+	margin: 7px;
+	border-radius: 10px;
+}
+
+.forecast-card {
+	width: 10px;
+}

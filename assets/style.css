@@ -35,6 +35,10 @@ header {
 	border-radius: 10px;
 }
 
-.forecast-card {
-	width: 10px;
+.card-body {
+	margin: 10px;
+}
+
+li {
+	cursor: pointer;
 }

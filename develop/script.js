@@ -180,13 +180,17 @@ function getLocalStorage() {
 	if (searchHistory !== null) {
 		newList = JSON.parse(searchHistory);
 		return newList;
+	} else {
+		newList = [];
 	}
+	return newList;
 }
 // render search history of user searches on page load if search history exists
 function renderHistory() {
 	$(".list-group-item").remove();
 	searchHistory = getLocalStorage();
-	if (!searchHistory.includes("city")) {
+
+	if (searchHistory !== null) {
 		for (var i = 0; i < searchHistory.length; i++) {
 			inputCity = searchHistory[i];
 			var displayHistory = $(

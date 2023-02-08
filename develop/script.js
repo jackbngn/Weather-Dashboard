@@ -1,4 +1,6 @@
-var button = document.querySelector(".btn");
+// var for elements
+var searchButton = document.querySelector(".search-button");
+var clearButton = document.querySelector(".clear-button");
 var cityInput = document.querySelector("#input-city");
 var currentWeatherEl = document.querySelector("#current-weather");
 var cityNameEl = document.querySelector("#city-name");
@@ -8,7 +10,7 @@ var tempEl = document.querySelector("#temperature");
 var humidityEl = document.querySelector("#humidity");
 var windEl = document.querySelector("#wind-speed");
 var fiveDayEl = document.querySelector("#fiveDay");
-var searchHistory = [];
+var recentSearch = document.querySelector("#search-histroy");
 
 //OpenWeather api key
 var apiKey = "755e0b14b164c0f68364b9b8b3215515";
@@ -19,21 +21,32 @@ function getWeather(cityName) {
 
 	//fetch request
 	fetch(apiUrl).then(function (response) {
-		if (response.ok) {
-			response.json().then(function (data) {
-				{
-					currentWeatherEl.classList.remove("d-none");
-					displayWeather(data, cityName);
-				}
-			});
+		//if response is not ok then throw error message
+		if (!response.ok) {
+			//empty currentWeatherEl and hide 5 forecast
+			fiveDayEl.classList.add("d-none");
+			currentWeatherEl.classList.remove("d-none");
+			iconEl.src = "";
+			descriptionEl.innerHTML = "";
+			tempEl.innerHTML = "";
+			humidityEl.innerHTML = "";
+			windEl.innerHTML = "";
+			cityNameEl.textContent = "Error: Please Enter City Again";
 		} else {
-			alert("Please enter a valid city name");
+			//clear input field once it has been submitted
+			cityInput.value = "";
+			response.json().then(function (data) {
+				currentWeatherEl.classList.remove("d-none");
+				addInfo(cityName);
+				displayWeather(data, cityName);
+			});
 		}
 	});
 }
 
-//display the current weather with city, icon, descr, temp, humid, wind
+//display function for current weather
 var displayWeather = function (data, cityName) {
+	//variable to store the current weather data
 	var currentInfo = {
 		city: data.name,
 		icon: data.weather[0].icon,
@@ -42,11 +55,9 @@ var displayWeather = function (data, cityName) {
 		humidity: data.main.humidity,
 		wind: data.wind.speed,
 	};
-
 	var iconApi =
 		"https://openweathermap.org/img/wn/" + currentInfo.icon + "@2x.png";
 
-	//display the current weather with city, icon, descr, temp, humid, wind
 	cityNameEl.innerHTML = currentInfo.city;
 	iconEl.src = iconApi;
 	descriptionEl.innerHTML = currentInfo.description;
@@ -66,29 +77,30 @@ var displayFiveForecast = function (cityName) {
 	//fetch request for 5 day forecast
 	fetch(apiSecondUrl).then(function (response) {
 		if (response.ok) {
-			console.log(response);
 			response.json().then(function (data) {
 				fiveDayEl.classList.remove("d-none");
-				console.log(data);
 				$(".fiveForecast").empty();
-				// display 5 card forcast
+
+				// for loop to display 5 day forecast cards
 				for (var i = 0; i < 5; i++) {
+					// variable to store the 5 day forecast
 					var forecastInfo = {
 						icon: data.list[i].weather[0].icon,
 						temp: data.list[i].main.temp,
 						humidity: data.list[i].main.humidity,
 						wind: data.list[i].wind.speed,
 					};
-					// set the date for each card
+
+					// setting the date for each card
 					var forecastIndex = i * 8 + 4;
 					var forecastDate = new Date(data.list[forecastIndex].dt * 1000);
 					var forecastSetDate = dayjs(forecastDate).format("MM/DD");
-					console.log(forecastDate);
 
 					var iconApi = `<img src="https://openweathermap.org/img/wn/${forecastInfo.icon}@2x.png"/>`;
+
 					// add elements to the card
 					var futureForecastEl = $(`
-									<div class="card card-body col-md-2 bg-primary text-white rounded">
+									<div class="card five-card-body col-sm-2 col-md-2 bg-primary text-white rounded">
 										<div class="card-body">
 											<p class="fs-3">${forecastSetDate}</p>
 											<p>${iconApi}</p>
@@ -99,7 +111,7 @@ var displayFiveForecast = function (cityName) {
 									</div>
 							
 									`);
-					// append the card to the card-body
+					// append the futureForecastEl card to the fiveForecast div
 					$(".fiveForecast").append(futureForecastEl);
 				}
 			});
@@ -108,32 +120,81 @@ var displayFiveForecast = function (cityName) {
 };
 
 // eventlistener for search button
-button.addEventListener("click", function (event) {
+searchButton.addEventListener("click", function (event) {
 	event.preventDefault();
 	var cityName = $("#input-city").val().trim();
-
 	getWeather(cityName);
-	//display search history and update weather
-	if (!searchHistory.includes(cityName)) {
-		searchHistory.push(cityName);
-		var displayHistory = $(`
-		<li class="list-group-item">${cityName}</li>`);
-		$("#search-histroy").append(displayHistory);
-	}
+});
 
-	localStorage.setItem("cityName", JSON.stringify(cityName));
+//eventlistener for clear button
+clearButton.addEventListener("click", function (event) {
+	event.preventDefault();
+	localStorage.removeItem("city");
+	$(".list-group-item").remove();
+	currentWeatherEl.classList.add("d-none");
+	fiveDayEl.classList.add("d-none");
+});
+
+// eventlistener for using the enter key
+$("#input-city").on("keyup", function (e) {
+	if (e.keyCode == 13) {
+		var cityName = $("#input-city").val().trim();
+		getWeather(cityName);
+	}
 });
 
 //Search history button on click searches the weather
-$("#search-histroy").on("click", "li", function () {
-	var cityHistroy = $(this).text();
-	getWeather(cityHistroy);
+$("#search-history").on("click", function (event) {
+	event.preventDefault();
+	// target the id of the city that was clicked to find the weather
+	cityInput.value = event.target.id;
+
+	getWeather(cityInput.value);
 });
-
-// render history on page load if search history exists
-function renderHistory() {
-	var searchCity = JSON.parse(localStorage.getItem("cityName"));
-
-	getWeather(searchCity);
+//update local storage if the city name is already in the local storage
+// then it will return else it will add the city name to the local storage
+function updateLocalStorage(cityName) {
+	if (searchHistory.includes(cityName)) {
+		return;
+	} else {
+		searchHistory.push(cityName);
+		localStorage.setItem("city", JSON.stringify(searchHistory));
+	}
 }
+
+// add the searched city name to local storage and check if local storage already has the name
+//if it doesn't then it will display the search history
+function addInfo(cityName) {
+	searchHistory = getLocalStorage();
+	var displayHistory = $(`
+			<li id="${cityName}" <a href="#" class="list-group-item list-group-item-action list-group-item-primary">${cityName}</li>`);
+	if (searchHistory.includes(cityName) === false) {
+		$("#search-history").append(displayHistory);
+	}
+	updateLocalStorage(cityName);
+}
+
+//get local storage
+function getLocalStorage() {
+	var searchHistory = localStorage.getItem("city");
+	if (searchHistory !== null) {
+		newList = JSON.parse(searchHistory);
+		return newList;
+	}
+}
+// render search history of user searches on page load if search history exists
+function renderHistory() {
+	$(".list-group-item").remove();
+	searchHistory = getLocalStorage();
+	if (!searchHistory.includes("cityName")) {
+		for (var i = 0; i < searchHistory.length; i++) {
+			inputCity = searchHistory[i];
+			var displayHistory = $(
+				`<li id="${inputCity}"<a href="#" class="list-group-item list-group-item-action list-group-item-primary">${inputCity}</li>`
+			);
+			$("#search-history").append(displayHistory);
+		}
+	}
+}
+
 renderHistory();

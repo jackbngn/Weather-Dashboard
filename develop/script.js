@@ -186,7 +186,7 @@ function getLocalStorage() {
 function renderHistory() {
 	$(".list-group-item").remove();
 	searchHistory = getLocalStorage();
-	if (!searchHistory.includes("cityName")) {
+	if (!searchHistory.includes("city")) {
 		for (var i = 0; i < searchHistory.length; i++) {
 			inputCity = searchHistory[i];
 			var displayHistory = $(

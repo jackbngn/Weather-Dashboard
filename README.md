@@ -2,7 +2,7 @@
 
 ## Description
 
-In this week Challenge, I was task to create a Weather Dashboard in the browser that retrieves the weather from a server api. Then it is dynamically updated to reflect the weather condition of each day.
+In this week Challenge, I was task to create a Weather Dashboard in the browser that retrieves the weather from a server api. Then it is dynamically updated to reflect the weather condition of each day. The user can enter a city name and check the weather condition along with saving the search history.
 
 ## Website Link
 
@@ -10,7 +10,7 @@ In this week Challenge, I was task to create a Weather Dashboard in the browser 
 
 ## Demo
 
-![demo]()
+![demo](/Demo/Weather%20Dashboard%20Demo.gif)
 
 ## User Story
 
@@ -38,4 +38,5 @@ THEN I am again presented with current and future conditions for that city
 
 [jQuery](https://jquery.com/) <br>
 [Bootstrap](https://getbootstrap.com/)<br>
-[dayjs](https://day.js.org/)
+[dayjs](https://day.js.org/) <br>
+[Openweathermap](https://openweathermap.org/)
